@@ -1,5 +1,8 @@
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const templates = require('../utilities/templates');
+const Utils = require('./../utilities/utilities.js');
+const MessageHandler = require('../utilities/messageHandler.js');
 
 class WebWhatsappApi {
     _client = new Client();
@@ -14,18 +17,27 @@ class WebWhatsappApi {
             console.log("ready!");
         });
 
-        this._client.on('message', msg => {
-            if (msg.body == '!ping') {
-                msg.reply('Olá, bem vindo ao suporte');
-            }
+        this._client.on('message', async msg => {
+            if (Utils.isGroup(msg.from)) return;
+            MessageHandler.verifySession(msg, this.fetchMessagesFromChat);
         });
 
         this._client.initialize();
 
     }
 
-    async chats() {
+    async listChats() {
         return this._client.getChats();
+    }
+
+    /**
+     * @param {import('whatsapp-web.js').Chat} chat 
+     * @param {int} limit 
+     * @return {import('whatsapp-web.js').Message[]}
+     */
+    async fetchMessagesFromChat(chat, limit){
+        const messages = await chat.fetchMessages({limit: limit});
+        return messages;
     }
 
     async sendMsg(number, message) {
@@ -45,6 +57,8 @@ class WebWhatsappApi {
         }
 
     }
+
+
 
 }
 

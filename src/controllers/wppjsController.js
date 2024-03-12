@@ -1,4 +1,5 @@
 const WebWhatsappApi = require('./../service/web-whatsapp-api.service.js')
+
 class WppJSController {
 
     static wppClient = new WebWhatsappApi();
@@ -15,7 +16,7 @@ class WppJSController {
 
     static async getChats(req, res) {
         try {
-            const chats = await this.wppClient.chats();
+            const chats = await this.wppClient.listChats();
             return res.json(chats).status(200);
         } catch (error) {
             res.json({ erro: "Problemas ao obter chats " + error }).status(500)
