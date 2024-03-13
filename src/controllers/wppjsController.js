@@ -1,9 +1,9 @@
 const WebWhatsappApi = require('./../service/web-whatsapp-api.service.js')
-
+const Redis = require('ioredis');
 class WppJSController {
 
     static wppClient = new WebWhatsappApi();
-
+    static redisClient = new Redis();
 
     static async createConnection(req, res) {
         try {
@@ -25,9 +25,9 @@ class WppJSController {
     
     static async sendMessage(req, res) {
         try {
-            const number = "55" + req.body.ddd + req.body.number.slice(-8);
-            const message = await this.wppClient.sendMsg(number, req.body.message);
-            return res.send(message).status(200);
+            this.redisClient.rpush('messagesQeue', JSON.stringify(req.body))
+            res.json({message:"Mensagem inserida na fila"}).status(201);
+  
         } catch (error) {
             res.json({ erro: "Problemas ao enviar mensagem" + error }).status(500)
         }

@@ -1,6 +1,5 @@
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const templates = require('../utilities/templates');
 const Utils = require('./../utilities/utilities.js');
 const MessageHandler = require('../utilities/messageHandler.js');
 
@@ -20,10 +19,10 @@ class WebWhatsappApi {
         this._client.on('message', async msg => {
             if (Utils.isGroup(msg.from)) return;
             MessageHandler.verifySession(msg, this.fetchMessagesFromChat);
+            
         });
 
         this._client.initialize();
-
     }
 
     async listChats() {
@@ -49,7 +48,7 @@ class WebWhatsappApi {
             return sendMessageData;
 
         } catch (error) {
-            console.log("Mobile number is not registered");
+            console.log(error);
             const erro = new Error("Numero inválido");
             erro.code = "IN1";
             throw erro;
